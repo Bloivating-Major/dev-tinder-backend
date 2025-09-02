@@ -1,0 +1,22 @@
+{
+  "name": "devdates-backend",
+  "version": "1.0.0",
+  "description": "Dating Application for Developers",
+  "keywords": [
+    "Node",
+    "JS",
+    "Express",
+    "JS"
+  ],
+  "license": "ISC",
+  "author": "Sambhav",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start" : "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
