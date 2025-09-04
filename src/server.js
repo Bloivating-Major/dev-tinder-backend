@@ -1,30 +1,36 @@
 const express = require('express');
+const {adminAuth, userAuth} = require('./middleware/auth.js');
 
 const app = express();
 
-app.get('/', (req, res)=>{
-    res.send("Hello Devs Welcome");
+// we will be creating a middleware to verify if the user is admin or not
+
+app.use('/admin', adminAuth);
+
+app.get('/user/login', (req, res)=>{
+    res.send('User login');
 })
 
-app.get('/test', (req, res)=>{
-    res.send("This is Test Route for Application");
+app.get('/user/getProfile', userAuth, (req, res)=>{
+    res.send('Getting user profile');
 })
 
-app.get('/profile', (req, res)=> {
-    res.send({name :  "Sambhav", age: 21});
+app.get('/admin/getAllData', (req, res)=>{
+    // verify if the user is admin
+    res.send('Getting all data');
 })
 
-app.post('/profile', (req, res)=>{
-    res.send({message: "This is a post request"});
+app.get('/admin/deleteAllData', (req, res)=>{
+    // verify if the user is admin
+    res.send('Deleting all data');
 })
 
-app.patch('/profile', (req, res)=>{
-    res.send({message: "This is a patch request"});
+// wildcard route for error handling
+app.use("/", (err, req, res, next) =>{
+    if(err){
+        return res.status(500).send('Something went wrong');
+    }
 });
-
-app.delete('/profile', (req, res)=> {
-    res.send({message: "This is a delete request"});
-})
 
 app.listen(3000, ()=> {
     console.log('Server is running on port 3000');
