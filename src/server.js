@@ -1,37 +1,34 @@
 const express = require('express');
-const {adminAuth, userAuth} = require('./middleware/auth.js');
-
+const connectDB = require('./config/database.js');
+const User = require('./models/user.js');
 const app = express();
 
-// we will be creating a middleware to verify if the user is admin or not
+connectDB();
 
-app.use('/admin', adminAuth);
+app.post('/signup', async (req, res)=>{
+    // Logic for user signup
+    const user = new User({
+        firstName : 'Sambhav',
+        lastName: 'Wakhariya',
+        email : "sambhav@example.com",
+        password : 'password123',
+        age : 21,
+        gender : 'Male'
+    });
 
-app.get('/user/login', (req, res)=>{
-    res.send('User login');
-})
-
-app.get('/user/getProfile', userAuth, (req, res)=>{
-    res.send('Getting user profile');
-})
-
-app.get('/admin/getAllData', (req, res)=>{
-    // verify if the user is admin
-    res.send('Getting all data');
-})
-
-app.get('/admin/deleteAllData', (req, res)=>{
-    // verify if the user is admin
-    res.send('Deleting all data');
-})
-
-// wildcard route for error handling
-app.use("/", (err, req, res, next) =>{
-    if(err){
-        return res.status(500).send('Something went wrong');
+    try {
+        await user.save();
+        res.status(201).send('User registered');
+    } catch (error) {
+        res.status(400).send('Error registering user');
     }
-});
+})
 
-app.listen(3000, ()=> {
+connectDB().then(()=>{
+    console.log('Database connected');
+    app.listen(3000, ()=> {
     console.log('Server is running on port 3000');
+});
+}).catch((error)=>{
+    console.error('Database connection failed:', error);
 });
