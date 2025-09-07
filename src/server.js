@@ -7,6 +7,7 @@ connectDB();
 
 app.use(express.json());
 
+// User Signup
 app.post('/signup', async (req, res)=>{
     // Logic for user signup
     const user = new User(req.body);
@@ -16,6 +17,35 @@ app.post('/signup', async (req, res)=>{
         res.status(201).send('User registered');
     } catch (error) {
         res.status(400).send('Error registering user');
+    }
+})
+
+// Get All Users
+app.get('/feed', async (req, res)=>{
+    // Logic to fetch user feed
+    try {
+        const users = await User.find();
+        res.status(200).json(users);
+    } catch (err) {
+        res.status(404).send('Something went wrong');
+    }
+})
+
+// Get User By Email
+app.get('/user', async(req, res)=>{
+    const email = req.body.email;
+    try {
+        // Using findOne might return null if no user is found, leading to potential issues
+        const user = await User.findOne({email});
+
+        // Using find instead of findOne to handle potential multiple users with same email
+        // const user = await User.find({email});
+        if (!user || user.length === 0) {
+            return res.status(404).send('User not found');
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(404).send('User not found');
     }
 })
 
