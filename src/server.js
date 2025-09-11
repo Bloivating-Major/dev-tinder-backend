@@ -1,6 +1,7 @@
 const express = require('express');
 const connectDB = require('./config/database.js');
 const User = require('./models/user.js');
+const { validateSignUpData } = require('./utils/validation.js');
 const app = express();
 
 connectDB();
@@ -13,10 +14,17 @@ app.post('/signup', async (req, res)=>{
     const user = new User(req.body);
 
     try {
+        // Validate input data
+        validateSignUpData(req);
+
+        const {firstName, lastName, email, password} = req.body;
+
+        const user = new User({firstName, lastName, email, password});
+
         await user.save();
         res.status(201).send('User registered');
     } catch (error) {
-        res.status(400).send('Error registering user');
+        res.status(400).send('Error registering user' + error.message);
     }
 })
 
