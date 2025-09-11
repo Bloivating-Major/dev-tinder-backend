@@ -6,12 +6,24 @@ const userSchema = new mongoose.Schema({
         type : String,
         required: [true, 'First name is required'],
         minLength : 3,
-        maxLength : 50
+        maxLength : 50,
+        validate:{
+            validator: function(v){
+                return !/[\p{Emoji}]/u.test(v);
+            },
+            message: 'First Name cannot contain emojis'
+        }
     },
     lastName : {
         type : String,
         minLength : 3,
-        maxLength : 50
+        maxLength : 50,
+        validate:{
+            validator: function(v){
+                return !/[\p{Emoji}]/u.test(v);
+            },
+            message: 'Last Name cannot contain emojis'
+        }
     },
     email : {
         type : String,
@@ -61,6 +73,7 @@ const userSchema = new mongoose.Schema({
     about : {
         type : String,
         default : "Hey there! I am using DevTinder.",
+        maxLength : 500
     },
     skills : {
         type : [String],
