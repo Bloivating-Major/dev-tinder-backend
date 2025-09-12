@@ -10,7 +10,7 @@ connectDB();
 app.use(express.json());
 
 // User Signup
-app.post('/signup', async (req, res)=>{
+app.post('/signup', async (req, res)=>{  
     try {
         // Validate input data
         validateSignUpData(req);
@@ -25,6 +25,37 @@ app.post('/signup', async (req, res)=>{
         res.status(201).send('User registered');
     } catch (error) {
         res.status(400).send('Error registering user' + error.message);
+    }
+})
+
+// User Signin
+app.post('/signin', async (req, res)=> {
+    try {
+    // take email and password
+    const {email, password} = req.body;
+
+    // check if email and password are present
+    if(!email || !password){
+        throw new Error('Email and Password are required');
+    }
+
+    // validate email first is it present in db
+    const validUser = await User.findOne({email});
+
+    if(!validUser){
+        throw new Error("Invalid Credentials");
+    }
+
+    // check if password is correct or not
+    const validPassword = await bcrypt.compare(password, validUser.password);
+
+    if(!validPassword){
+        throw new Error('Invalid Credentials');
+    }
+
+        res.status(201).send("Login Successful");
+    } catch (error) {
+        res.status(400).send("Error : "+ error.message);
     }
 })
 
