@@ -2,12 +2,26 @@ const express = require('express');
 const connectDB = require('./config/database.js');
 const User = require('./models/user.js');
 const { validateSignUpData } = require('./utils/validation.js');
+const cookieParse = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+
 const app = express();
 
 connectDB();
 
+// TODOS
+/**
+ - install cookie-parser - done
+ - just send a dummy cookie to user - done
+ - create GET /profile APi and check if you get the cookie back - done
+ - install jsonwebtoken  - done
+ - IN login API, after email and password validation, create e JWT token and send it to user in cookies
+ - read the cookies inside your profile API and find the logged in user
+ */
+
 app.use(express.json());
+app.use(cookieParse());
 
 // User Signup
 app.post('/signup', async (req, res)=>{  
@@ -49,13 +63,55 @@ app.post('/signin', async (req, res)=> {
     // check if password is correct or not
     const validPassword = await bcrypt.compare(password, validUser.password);
 
-    if(!validPassword){
+    if(validPassword){
+
+        // Generate JWT token
+        const token = jwt.sign({ _id: validUser._id }, "thisisthesecretkey");
+
+        // Send token in cookie
+        res.cookie('token', token);
+        
+        res.status(201).send("Login Successful");
+
+    }else{
         throw new Error('Invalid Credentials');
     }
+} catch (error) {
+    res.status(400).send("Error : "+ error.message);
+}
+})
 
-        res.status(201).send("Login Successful");
+// Get Profile
+app.get('/profile', async(req, res)=>{
+    try {
+        // get token from cookie
+        const cookies = req.cookies;
+
+        const { token } = cookies;
+
+        // if we don't have token
+
+        if(!token){
+            throw new Error('Unauthorized access');
+        }
+
+        // validate token
+        const decoded = jwt.verify(token, 'thisisthesecretkey');
+
+
+        // get user info from token
+        const user = await User.findById(decoded.id);
+
+
+        // if user not available then throw error
+
+        if (!user){
+            throw new Error('User not found');
+        }
+
+        res.status(200).send({message: 'Profile fetched successfully', user});
     } catch (error) {
-        res.status(400).send("Error : "+ error.message);
+        res.status(400).send('Error: ' + error.message);
     }
 })
 
