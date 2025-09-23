@@ -1,10 +1,11 @@
 const express = require('express');
 const User = require('../models/user');
+const { userAuth } = require('../middleware/auth');
 
 const userRouter = express.Router();
 
 // Get All Users
-userRouter.get("/feed", async (req, res) => {
+userRouter.get("/feed", userAuth, async (req, res) => {
   // Logic to fetch user feed
   try {
     const users = await User.find();

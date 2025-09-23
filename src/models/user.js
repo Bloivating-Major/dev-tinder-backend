@@ -63,6 +63,8 @@ const userSchema = new mongoose.Schema(
           throw new Error("Invalid Gender");
         }
       },
+      lowercase: true,
+      trim: true
     },
     photoURL: {
       type: String,

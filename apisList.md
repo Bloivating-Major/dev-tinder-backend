@@ -1,14 +1,14 @@
 # API List For the Project Backend
 
 ## Auth APIs
-- POST/signup
-- POST/login
-- POST/logout
+- POST/signup ✅
+- POST/login ✅
+- POST/logout ✅
 
 ## Profile APIs
-- GET/profile/view
-- PATCH/profile/edit
-- PATCH/profile/password
+- GET/profile/view ✅
+- PATCH/profile/edit ✅
+- PATCH/profile/password ✅
 
 ## Connection Request APIs
 - POST/request/send/accept/:requestId
